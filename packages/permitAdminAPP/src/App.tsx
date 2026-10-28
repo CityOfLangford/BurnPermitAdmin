@@ -365,7 +365,7 @@ function PermitDetails({ permit, permitPeriods, onBack, onSaved }: PermitDetails
           ) : (
             <>
               <button type="button" className="print-button" onClick={printPermit}>Generate Permit PDF</button>
-              <button type="button" className="submit-button" onClick={() => setEditing(true)}>Edit</button>
+              <button type="button" className="submit-button" onClick={(event) => { event.preventDefault(); setDraft(permitDraftFromRow(permit)); setError(null); setEditing(true); }}>Edit</button>
             </>
           )}
         </div>
@@ -511,6 +511,15 @@ export default function App() {
     setSortDirection(nextSort.direction);
   };
 
+  const refreshPermits = (): void => {
+    if (page !== 1) {
+      setPage(1);
+      return;
+    }
+
+    void fetchPermits();
+  };
+
   const updateForm = (field: keyof PermitForm, value: string): void => {
     setPermitForm((current) => ({ ...current, [field]: value }));
   };
@@ -572,8 +581,8 @@ export default function App() {
       <div className="page-shell">
       <header className="toolbar">
         <div>
-          <h1>Burn Permit Admin</h1>
-          <p>Burn Permits List</p>
+          <h1>All Burn Permits</h1>
+          <button type="button" className="secondary-button refresh-button" onClick={refreshPermits} disabled={loading}> ⟳ </button>
         </div>
         <div className="toolbar-right">
           <button type="button" className="new-permit-button" onClick={() => setIsNewPermitOpen(true)}>
