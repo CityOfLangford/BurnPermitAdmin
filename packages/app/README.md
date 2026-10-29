@@ -67,7 +67,7 @@ npm run preview  # preview the production build on port 4173
 
 The app expects the API to be running at `http://localhost:3001` during development.
 Copy `.env.example` to `.env` before running or building the client. The app uses
-the existing single-tenant Entra registration, requests the `access_as_user` API
-scope, and does not render the application until the protected API health check
+the single-tenant Entra registration and requests the `AccessBurnPermitAdmin` API
+scope. It does not render the application until the protected API health check
 confirms group authorization. Production builds must receive the corresponding
 `VITE_ENTRA_*` variables.

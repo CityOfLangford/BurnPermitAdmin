@@ -1,6 +1,6 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 const defaultTenantId = 'e6daa991-402f-46f2-b53b-09367f7d9ea8';
-const defaultClientId = 'd18ed6f1-6ec8-4fa3-9359-222db017c34c';
+const defaultClientId = '702e2464-dd84-41db-8bf1-a2cdcf806cb2';
 const defaultGroupId = 'aee60979-dcc2-4d85-9a1b-ca7fb86da40d';
 export function readAuthorizationConfig(environment = process.env) {
     const enabledValue = (environment.AUTHORIZATION_ENABLED ?? environment.AUTHORIZATION_ENABLE ?? 'true')
@@ -14,7 +14,7 @@ export function readAuthorizationConfig(environment = process.env) {
         tenantId: environment.ENTRA_TENANT_ID || defaultTenantId,
         clientId: environment.ENTRA_CLIENT_ID || defaultClientId,
         groupId: environment.ENTRA_GROUP_ID || defaultGroupId,
-        scope: environment.ENTRA_API_SCOPE ?? 'access_as_user',
+        scope: environment.ENTRA_API_SCOPE ?? 'AccessBurnPermitAdmin',
     };
     if (config.enabled && (!config.tenantId || !config.clientId || !config.groupId || !config.scope)) {
         throw new Error('Entra tenant, client, group, and API scope settings are required when authorization is enabled');

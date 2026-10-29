@@ -1,9 +1,9 @@
 import { PublicClientApplication, type Configuration } from '@azure/msal-browser';
 
 const tenantId = import.meta.env?.VITE_ENTRA_TENANT_ID || 'e6daa991-402f-46f2-b53b-09367f7d9ea8';
-const clientId = import.meta.env?.VITE_ENTRA_CLIENT_ID || 'd18ed6f1-6ec8-4fa3-9359-222db017c34c';
+const clientId = import.meta.env?.VITE_ENTRA_CLIENT_ID || '702e2464-dd84-41db-8bf1-a2cdcf806cb2';
 
-export const apiScope = import.meta.env?.VITE_ENTRA_API_SCOPE || `api://${clientId}/access_as_user`;
+export const apiScope = import.meta.env?.VITE_ENTRA_API_SCOPE || `api://${clientId}/AccessBurnPermitAdmin`;
 
 export function getRedirectUri(origin: string): string {
   return origin.endsWith('/') ? origin : `${origin}/`;
