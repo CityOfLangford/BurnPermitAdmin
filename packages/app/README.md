@@ -12,6 +12,8 @@ The main screen presents permits in a responsive table with:
 - Page-size choices of `10`, `25`, `100`, `200`, and `500`
 - Pagination controls and a result-count summary
 - Loading, empty, and API error states
+- A global health footer for BURNPERMITAPI availability, database connectivity,
+  Open Burn and Campfire app heartbeat checks, and each permit system's open/closed state
 - A New permit modal for open-burn and campfire applications
 - Clickable permit rows with read-only detail views
 - Edit, cancel, and save actions for existing permits
@@ -34,6 +36,8 @@ enables the fields, Cancel discards changes, and Save persists them through the 
 
 - `src/App.tsx` provides the application layout, sidebar navigation, and hash-based
   page selection. All Permits is the default page.
+- `src/components/HealthFooter.tsx` refreshes system health on load and every
+  60 seconds, and provides details for each system.
 - `src/components/AllPermits.tsx` owns the All Permits table state, API request lifecycle,
   sorting controls, pagination, modal state, form serialization, and submission feedback.
 - `src/components/campfire.tsx`, `src/components/openburn.tsx`,

@@ -8,6 +8,9 @@ to the Permit Admin app.
 - Starts an Express server on port `3001` by default.
 - Enables CORS and JSON request handling.
 - Provides `GET /health` for a lightweight status check.
+- Provides authenticated `GET /api/system-health` to check the database and
+  `dbo.colsp_IsSystemOpen` state for Open Burn and Campfire, and probes the
+  configured BURNPERMITAPI `/api/health` endpoint.
 - Provides `GET /api/permits` for filtered, sorted, paginated permits.
 - Provides `POST /api/permits` for new open-burn and campfire applications.
 - Provides `PUT /api/permits/:id` for updating editable permit details.
@@ -36,6 +39,9 @@ is enabled by default; keep it enabled in production:
 | `DB_PASSWORD` | none | Database password |
 | `DB_ENCRYPT` | `true` | Enable encrypted SQL connections |
 | `DB_TRUST_SERVER_CERTIFICATE` | `true` | Trust the SQL Server certificate |
+| `PUBLIC_API_URL` | `http://localhost:50100` | Base URL of BURNPERMITAPI; the health check requests `/api/health` |
+| `OPENBURN_URL` | `https://openburn.langford.ca` | Open Burn app URL; the health check requests `/heartbeat.txt` |
+| `CAMPFIRE_URL` | `https://campfire.langford.ca` | Campfire app URL; the health check requests `/heartbeat.txt` |
 | `AUTHORIZATION_ENABLED` | `true` | Require an Entra bearer token and `BurnPermitAdmins` group membership (`AUTHORIZATION_ENABLE` is also accepted) |
 | `ENTRA_TENANT_ID` | `e6daa991-402f-46f2-b53b-09367f7d9ea8` | Entra tenant used to validate token issuer |
 | `ENTRA_CLIENT_ID` | `702e2464-dd84-41db-8bf1-a2cdcf806cb2` | API token audience and SPA client ID |
@@ -49,6 +55,15 @@ protects every API route, including `/api/health` and `/health`. The SPA reads
 `/api/auth-config` at startup so this setting also controls whether it redirects
 users to Entra; if that configuration endpoint cannot be reached, the SPA fails
 closed and does not render.
+
+Set `PUBLIC_API_URL` independently for each Permit Admin deployment to the
+corresponding BURNPERMITAPI environment (local, staging, or production). The
+health check calls `<PUBLIC_API_URL>/api/health` with a three-second timeout.
+The default localhost URL is intended for local development.
+Set `OPENBURN_URL` and `CAMPFIRE_URL` to the corresponding React app base URLs
+for each environment. Their `/heartbeat.txt` responses must succeed and contain
+return a successful HTTP status for the apps to report reachable; the file
+contents are ignored. The heartbeat checks also use a three-second timeout.
 
 The existing Entra registration (`702e2464-dd84-41db-8bf1-a2cdcf806cb2`) is used
 as both the SPA client and API resource. Configure it as a single-tenant app, add
@@ -73,8 +88,9 @@ delegated scope or group claim was missing. A group denial can mean the account
 is not assigned to `BurnPermitAdmins` or that Entra omitted the expected group
 claim from the access token.
 
-The database must provide `dbo.colsp_ListPermits` with `systemId`, `startDate`,
-and `endDate` parameters, the two submission procedures, the checked-in
+The database must provide `dbo.colsp_IsSystemOpen` with a `systemId` parameter
+(1 for Open Burn and 2 for Campfire), as well as `dbo.colsp_ListPermits` with
+`systemId`, `startDate`, and `endDate` parameters, the two submission procedures, the checked-in
 `colsp_GetPermitPeriods` and `colsp_UpdatePermit` procedures, and the
 `dbo.BlackoutDates`, `dbo.SystemAvailableDates`, `dbo.PermitPeriods`, and
 `dbo.Configurations` tables.
@@ -95,6 +111,8 @@ and `endDate` parameters, the two submission procedures, the checked-in
 - `services/availabilityService.ts`, `services/permitPeriodAdminService.ts`, and
     `services/configurationService.ts` manage system availability, permit periods,
     and admin-editable configuration values using parameterized SQL queries.
+- `services/systemHealthService.ts` reports database connectivity and maps the
+    Open Burn and Campfire results from `dbo.colsp_IsSystemOpen`.
 - `tests/` covers query normalization, database defaults, service behavior, and the health route.
 
 Sorting is restricted to the known permit fields and defaults to `PermitDate` descending.

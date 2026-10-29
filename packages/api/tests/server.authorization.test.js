@@ -18,7 +18,7 @@ test('authorization middleware protects all API routes, including health checks'
     assert.equal(authConfigResponse.status, 200);
     assert.deepEqual(await authConfigResponse.json(), { authorizationEnabled: true });
 
-    for (const path of ['/health', '/api/health', '/api/configurations']) {
+    for (const path of ['/health', '/api/health', '/api/system-health', '/api/configurations']) {
       const response = await fetch(`http://127.0.0.1:${address.port}${path}`);
       assert.equal(response.status, 401, `${path} should require an access token`);
     }
