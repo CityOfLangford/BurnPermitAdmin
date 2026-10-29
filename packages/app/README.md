@@ -12,7 +12,7 @@ The main screen presents permits in a responsive table with:
 - Page-size choices of `10`, `25`, `100`, `200`, and `500`
 - Pagination controls and a result-count summary
 - Loading, empty, and API error states
-- A global health footer for BURNPERMITAPI availability, database connectivity,
+- A global health footer for BurnPermitAPI availability, database connectivity,
   Open Burn and Campfire app heartbeat checks, and each permit system's open/closed state
 - A New permit modal for open-burn and campfire applications
 - Clickable permit rows with read-only detail views

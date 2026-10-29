@@ -77,7 +77,7 @@ test('getSystemHealth reports database failures and marks both systems unavailab
       url: 'http://localhost:50100/api/health',
       statusCode: null,
       uptime: null,
-      message: 'Unable to reach BURNPERMITAPI',
+      message: 'Unable to reach BurnPermitAPI',
     }), async (system) => ({
       status: 'unreachable',
       url: `https://${system.name.toLowerCase().replace(' ', '')}.example/heartbeat.txt`,

@@ -10,7 +10,7 @@ to the Permit Admin app.
 - Provides `GET /health` for a lightweight status check.
 - Provides authenticated `GET /api/system-health` to check the database and
   `dbo.colsp_IsSystemOpen` state for Open Burn and Campfire, and probes the
-  configured BURNPERMITAPI `/api/health` endpoint.
+  configured BurnPermitAPI `/api/health` endpoint.
 - Provides `GET /api/permits` for filtered, sorted, paginated permits.
 - Provides `POST /api/permits` for new open-burn and campfire applications.
 - Provides `PUT /api/permits/:id` for updating editable permit details.
@@ -39,7 +39,7 @@ is enabled by default; keep it enabled in production:
 | `DB_PASSWORD` | none | Database password |
 | `DB_ENCRYPT` | `true` | Enable encrypted SQL connections |
 | `DB_TRUST_SERVER_CERTIFICATE` | `true` | Trust the SQL Server certificate |
-| `PUBLIC_API_URL` | `http://localhost:50100` | Base URL of BURNPERMITAPI; the health check requests `/api/health` |
+| `PUBLIC_API_URL` | `http://localhost:50100` | Base URL of BurnPermitAPI; the health check requests `/api/health` |
 | `OPENBURN_URL` | `https://openburn.langford.ca` | Open Burn app URL; the health check requests `/heartbeat.txt` |
 | `CAMPFIRE_URL` | `https://campfire.langford.ca` | Campfire app URL; the health check requests `/heartbeat.txt` |
 | `AUTHORIZATION_ENABLED` | `true` | Require an Entra bearer token and `BurnPermitAdmins` group membership (`AUTHORIZATION_ENABLE` is also accepted) |
@@ -57,7 +57,7 @@ users to Entra; if that configuration endpoint cannot be reached, the SPA fails
 closed and does not render.
 
 Set `PUBLIC_API_URL` independently for each Permit Admin deployment to the
-corresponding BURNPERMITAPI environment (local, staging, or production). The
+corresponding BurnPermitAPI environment (local, staging, or production). The
 health check calls `<PUBLIC_API_URL>/api/health` with a three-second timeout.
 The default localhost URL is intended for local development.
 Set `OPENBURN_URL` and `CAMPFIRE_URL` to the corresponding React app base URLs
