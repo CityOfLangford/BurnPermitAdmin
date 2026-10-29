@@ -7,7 +7,7 @@ const appDirectory = path.join(root, "packages", "app");
 module.exports = {
 	apps: [
 		{
-			name: "BurnPermitAPI",
+			name: "BurnAdminAPI",
 			script: path.join(apiDirectory, "dist", "server.js"),
 			cwd: apiDirectory,
 			max_memory_restart: "300M",
@@ -21,7 +21,7 @@ module.exports = {
 			},
 		},
 		{
-			name: "BurnPermitApp",
+			name: "BurnAdminApp",
 			script: path.join(appDirectory, "serve.mjs"),
 			cwd: appDirectory,
 			instances: 1,
