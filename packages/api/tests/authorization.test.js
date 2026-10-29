@@ -8,7 +8,7 @@ const config = {
   tenantId: 'tenant-id',
   clientId: 'client-id',
   groupId: 'allowed-group-id',
-  scope: 'access_as_user',
+  scope: 'AccessBurnPermitAdmin',
 };
 
 async function requestWithClaims(claims, authorization = 'Bearer valid-token') {
@@ -32,9 +32,9 @@ test('authorization configuration defaults to the Burn Permit Entra tenant and g
   const defaults = readAuthorizationConfig({});
   assert.equal(defaults.enabled, true);
   assert.equal(defaults.tenantId, 'e6daa991-402f-46f2-b53b-09367f7d9ea8');
-  assert.equal(defaults.clientId, 'd18ed6f1-6ec8-4fa3-9359-222db017c34c');
+  assert.equal(defaults.clientId, '702e2464-dd84-41db-8bf1-a2cdcf806cb2');
   assert.equal(defaults.groupId, 'aee60979-dcc2-4d85-9a1b-ca7fb86da40d');
-  assert.equal(defaults.scope, 'access_as_user');
+  assert.equal(defaults.scope, 'AccessBurnPermitAdmin');
   assert.equal(readAuthorizationConfig({ AUTHORIZATION_ENABLED: 'false' }).enabled, false);
   assert.equal(readAuthorizationConfig({ AUTHORIZATION_ENABLE: 'false' }).enabled, false);
   assert.equal(readAuthorizationConfig({

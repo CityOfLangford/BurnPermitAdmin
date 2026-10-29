@@ -38,9 +38,9 @@ is enabled by default; keep it enabled in production:
 | `DB_TRUST_SERVER_CERTIFICATE` | `true` | Trust the SQL Server certificate |
 | `AUTHORIZATION_ENABLED` | `true` | Require an Entra bearer token and `BurnPermitAdmins` group membership (`AUTHORIZATION_ENABLE` is also accepted) |
 | `ENTRA_TENANT_ID` | `e6daa991-402f-46f2-b53b-09367f7d9ea8` | Entra tenant used to validate token issuer |
-| `ENTRA_CLIENT_ID` | `d18ed6f1-6ec8-4fa3-9359-222db017c34c` | API token audience and SPA client ID |
+| `ENTRA_CLIENT_ID` | `702e2464-dd84-41db-8bf1-a2cdcf806cb2` | API token audience and SPA client ID |
 | `ENTRA_GROUP_ID` | `aee60979-dcc2-4d85-9a1b-ca7fb86da40d` | Required group claim |
-| `ENTRA_API_SCOPE` | `access_as_user` | Required delegated API scope in the access token |
+| `ENTRA_API_SCOPE` | `AccessBurnPermitAdmin` | Required delegated API scope in the access token |
 
 Set `AUTHORIZATION_ENABLED=false` only for isolated local development or tests. The
 tenant, client, and group values default to the Burn Permit registration shown
@@ -50,15 +50,15 @@ protects every API route, including `/api/health` and `/health`. The SPA reads
 users to Entra; if that configuration endpoint cannot be reached, the SPA fails
 closed and does not render.
 
-The existing Entra registration (`d18ed6f1-6ec8-4fa3-9359-222db017c34c`) is used
+The existing Entra registration (`702e2464-dd84-41db-8bf1-a2cdcf806cb2`) is used
 as both the SPA client and API resource. Configure it as a single-tenant app, add
 the SPA redirect URIs `https://burn-admin.langford.ca/` and
-`http://localhost:5173/`, expose the delegated scope `access_as_user` under the
-Application ID URI `api://d18ed6f1-6ec8-4fa3-9359-222db017c34c`, and enable the
+`http://localhost:5173/`, expose the delegated scope `AccessBurnPermitAdmin` under the
+Application ID URI `api://702e2464-dd84-41db-8bf1-a2cdcf806cb2`, and enable the
 `groups` claim in access tokens. Set the API's requested access token version to
 2. Select groups assigned to the application, and
 assign `BurnPermitAdmins` (`aee60979-dcc2-4d85-9a1b-ca7fb86da40d`) to its enterprise
-application. Add the `access_as_user` delegated API permission to the client and
+application. Add the `AccessBurnPermitAdmin` delegated API permission to the client and
 grant consent as required by the tenant. Ensure production routing sends `/api/*`
 to this Express API. The SPA build also needs the matching `VITE_ENTRA_*` values
 from `packages/app/.env.example`.
