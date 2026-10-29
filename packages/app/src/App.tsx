@@ -6,6 +6,7 @@ import Campfire from './components/campfire';
 import OpenBurn from './components/openburn';
 import Periods from './components/periods';
 import SystemConfigs from './components/systemconfigs';
+import HealthFooter from './components/HealthFooter';
 
 export {
   buildPermitApplication,
@@ -73,10 +74,6 @@ function NavigationPane({ activePage }: { activePage: PageId }) {
       </nav>
     </aside>
   );
-}
-
-function HealthFooter() {
-  return <footer className="health-footer" aria-label="Application health status" />;
 }
 
 function PageContent({ page }: { page: PageId }) {

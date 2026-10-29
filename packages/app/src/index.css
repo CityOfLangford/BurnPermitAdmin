@@ -92,6 +92,94 @@ body {
   background: rgba(255, 255, 255, 0.35);
 }
 
+.health-footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+}
+
+.health-footer-title {
+  color: #374151;
+}
+
+.health-system-check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid #d8e1dc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.health-ok {
+  color: #166534;
+}
+
+.health-error {
+  color: #b91c1c;
+}
+
+.health-closed {
+  color: #4b5563;
+}
+
+.health-unknown {
+  color: #92400e;
+}
+
+.health-app-status,
+.health-open-status {
+  white-space: nowrap;
+}
+
+.health-system-details {
+  position: relative;
+}
+
+.health-system-details summary {
+  cursor: pointer;
+  color: #374151;
+  font-weight: 600;
+}
+
+.health-details-panel {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: calc(100% + 0.45rem);
+  min-width: 16rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #cbd5d0;
+  border-radius: 7px;
+  background: white;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 14%);
+  color: #374151;
+}
+
+.health-checked-at {
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.health-refresh {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid #cbd5d0;
+  border-radius: 5px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+}
+
+.health-refresh:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 button,
 select {
   font: inherit;
@@ -784,6 +872,17 @@ tbody tr:hover {
 @media print {
   @page {
     margin: 0.6in;
+  }
+
+  @media (max-width: 700px) {
+    .health-footer-content {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .health-system-check {
+      width: 100%;
+    }
   }
 
   body {

@@ -9,6 +9,7 @@ import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackout
 import { createSystemAvailableDate, deleteSystemAvailableDate, getSystemAvailableDates, parseSystemAvailableDate, updateSystemAvailableDate, } from './services/availabilityService.js';
 import { createAdminPermitPeriod, getAdminPermitPeriods, parseAdminPermitPeriod, updateAdminPermitPeriod, } from './services/permitPeriodAdminService.js';
 import { getAdminConfigurations, parseConfigurationValue, updateAdminConfiguration } from './services/configurationService.js';
+import { getSystemHealth } from './services/systemHealthService.js';
 dotenv.config();
 export const app = express();
 const port = Number(process.env.PORT || 3001);
@@ -33,6 +34,18 @@ const healthCheck = (_req, res) => {
 };
 app.get('/health', healthCheck);
 app.get('/api/health', healthCheck);
+app.get('/api/system-health', async (_req, res) => {
+    try {
+        res.json(await getSystemHealth());
+    }
+    catch (error) {
+        console.error('Error checking system health:', error);
+        res.status(500).json({
+            error: 'Failed to check system health',
+            details: process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : undefined,
+        });
+    }
+});
 app.get('/api/permits', async (req, res) => {
     try {
         const result = await getPermits({

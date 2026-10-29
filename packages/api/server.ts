@@ -20,6 +20,7 @@ import {
   updateAdminPermitPeriod,
 } from './services/permitPeriodAdminService.js';
 import { getAdminConfigurations, parseConfigurationValue, updateAdminConfiguration } from './services/configurationService.js';
+import { getSystemHealth } from './services/systemHealthService.js';
 
 dotenv.config();
 
@@ -49,6 +50,18 @@ const healthCheck = (_req: Request, res: Response): void => {
 
 app.get('/health', healthCheck);
 app.get('/api/health', healthCheck);
+
+app.get('/api/system-health', async (_req: Request, res: Response) => {
+  try {
+    res.json(await getSystemHealth());
+  } catch (error: unknown) {
+    console.error('Error checking system health:', error);
+    res.status(500).json({
+      error: 'Failed to check system health',
+      details: process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : undefined,
+    });
+  }
+});
 
 app.get('/api/permits', async (req: Request, res: Response) => {
   try {
