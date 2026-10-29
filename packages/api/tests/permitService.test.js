@@ -84,6 +84,40 @@ test('getPermits accepts the configured page sizes', async () => {
   assert.equal((await getPermits({ pageSize: 25 }, poolFactory)).pagination.pageSize, 25);
 });
 
+test('getPermits searches partial permit number, applicant, and address text before pagination', async () => {
+  const searchRows = [
+    { ...rows[0], PermitID: 1, PermitNumber: 'BRN-2024-0123', Applicant: 'Alex Johnson', PermitAddress: '1234 Main Street' },
+    { ...rows[1], PermitID: 2, PermitNumber: 'BRN-2024-0456', Applicant: 'Sam Rivera', PermitAddress: '55 Cedar Lane' },
+    ...Array.from({ length: 10 }, (_value, index) => ({
+      ...rows[0],
+      PermitID: index + 3,
+      PermitNumber: `BRN-2024-${String(index + 3).padStart(4, '0')}`,
+      Applicant: `Applicant ${index + 3}`,
+      PermitAddress: `${index + 100} Main Road`,
+    })),
+  ];
+  const poolFactory = async () => ({
+    request() {
+      return {
+        input() { return this; },
+        async execute() { return { recordset: searchRows }; },
+      };
+    },
+  });
+
+  const permitNumberResult = await getPermits({ search: '2024-012', pageSize: 10 }, poolFactory);
+  assert.deepEqual(permitNumberResult.data.map((row) => row.PermitID), [1]);
+
+  const applicantResult = await getPermits({ search: 'LEX JOHN', pageSize: 10 }, poolFactory);
+  assert.deepEqual(applicantResult.data.map((row) => row.PermitID), [1]);
+
+  const addressResult = await getPermits({ search: ' MAIN ', page: 2, pageSize: 10 }, poolFactory);
+  assert.equal(addressResult.pagination.total, 11);
+  assert.equal(addressResult.pagination.totalPages, 2);
+  assert.equal(addressResult.pagination.page, 2);
+  assert.equal(addressResult.data.length, 1);
+});
+
 test('getPermitPeriods calls the all-periods procedure and maps period details', async () => {
   let procedureName = '';
   const inputs = new Map();

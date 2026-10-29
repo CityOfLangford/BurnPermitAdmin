@@ -122,7 +122,9 @@ or `npm --workspace packages/api test`.
 GET /api/permits?page=1&pageSize=20&sortField=PermitDate&sortDirection=desc
 ```
 
-The response contains `data`, `pagination`, and the normalized `sort` settings.
+Add `search=<text>` to match a partial permit number, applicant name, or address
+(case-insensitive). Search is applied before sorting and pagination. The response
+contains `data`, `pagination`, and the normalized `sort` settings.
 
 ## Blackout date endpoints
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildPermitApplication, buildPermitQueryParams, formatDate, formatPermitType, getCampfireEndTime, getPageNumbers, getOpenBurnPeriods, isCancelledStatus, printPermit, shouldShowTopPagination, toggleSort } from '../src/App.tsx';
+import { buildPermitApplication, buildPermitQueryParams, formatDate, formatPermitType, getCampfireEndTime, getPageNumbers, getOpenBurnPeriods, highlightSearchMatch, isCancelledStatus, printPermit, shouldShowTopPagination, toggleSort } from '../src/App.tsx';
 import { apiFetch, setApiAuthorizationEnabled } from '../src/auth/apiFetch.ts';
 import { getRedirectUri } from '../src/auth/entra.ts';
 
@@ -35,9 +35,32 @@ test('formatDate handles empty, invalid, and valid dates', () => {
   assert.equal(formatDate('2024-01-02'), new Date('2024-01-02').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }));
 });
 
+test('highlightSearchMatch highlights case-insensitive partial text and preserves surrounding text', () => {
+  const permitNumber = highlightSearchMatch('BRN26-00239', '239');
+  const address = highlightSearchMatch('2397 Main Street', '239');
+  assert.ok(Array.isArray(permitNumber));
+  assert.ok(Array.isArray(address));
+  const permitNumberMatch = permitNumber.find((part) => typeof part === 'object' && part.type === 'mark');
+  const addressMatch = address.find((part) => typeof part === 'object' && part.type === 'mark');
+  assert.equal(permitNumberMatch.props.children, '239');
+  assert.equal(addressMatch.props.children, '239');
+  const textContent = (parts) => parts.map((part) => typeof part === 'string' ? part : part.props.children).join('');
+  assert.equal(textContent(permitNumber), 'BRN26-00239');
+  assert.equal(textContent(address), '2397 Main Street');
+});
+
+test('highlightSearchMatch treats regex characters as literal search text', () => {
+  const result = highlightSearchMatch('Permit (A.1)', '(A.1)');
+  assert.ok(Array.isArray(result));
+  assert.equal(result[1].props.children, '(A.1)');
+  assert.equal(highlightSearchMatch('Permit A.1', '(A.1)'), 'Permit A.1');
+  assert.equal(highlightSearchMatch(null, 'permit'), '—');
+});
+
 test('buildPermitQueryParams serializes the current table state', () => {
   assert.equal(buildPermitQueryParams(2, 50, 'Applicant', 'asc').toString(), 'page=2&pageSize=50&sortField=Applicant&sortDirection=asc');
   assert.equal(buildPermitQueryParams(1, 10, 'PermitDate', 'desc', 2).toString(), 'page=1&pageSize=10&sortField=PermitDate&sortDirection=desc&systemId=2');
+  assert.equal(buildPermitQueryParams(1, 10, 'PermitDate', 'desc', undefined, '  123 main  ').toString(), 'page=1&pageSize=10&sortField=PermitDate&sortDirection=desc&search=123+main');
 });
 
 test('getPageNumbers handles empty and multi-page results', () => {
