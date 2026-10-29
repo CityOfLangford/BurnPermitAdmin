@@ -40,6 +40,7 @@ export interface PermitQueryParams {
   pageSize?: string | number | null;
   sortField?: string | null;
   sortDirection?: string | null;
+  search?: string | null;
 }
 
 export interface PermitPagination {
@@ -202,7 +203,12 @@ export async function getPermits(params: PermitQueryParams = {}, poolFactory: ty
     PermitStatus: typeof row.PermitStatus === 'string' ? row.PermitStatus : null,
   }));
 
-  const sortedRows = applySorting(rows, safeField, normalizedDirection);
+  const search = params.search?.trim().toLocaleLowerCase();
+  const matchingRows = search
+    ? rows.filter((row) => [row.PermitNumber, row.Applicant, row.PermitAddress]
+      .some((value) => value?.toLocaleLowerCase().includes(search)))
+    : rows;
+  const sortedRows = applySorting(matchingRows, safeField, normalizedDirection);
   const total = sortedRows.length;
   const totalPages = Math.max(Math.ceil(total / pageSize), 1);
   const safePage = Math.min(page, totalPages);

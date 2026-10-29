@@ -13,6 +13,7 @@ export {
   formatDate,
   formatPermitType,
   getCampfireEndTime,
+  highlightSearchMatch,
   getOpenBurnPeriods,
   getPageNumbers,
   isCancelledStatus,
