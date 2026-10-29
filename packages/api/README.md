@@ -68,6 +68,11 @@ as its issuer, audience, delegated scope, and exact group object ID. Configure
 access-token group claims in Entra; tokens using group-overage claims without the
 group list are denied.
 
+When authorization returns 403, the API response identifies whether the
+delegated scope or group claim was missing. A group denial can mean the account
+is not assigned to `BurnPermitAdmins` or that Entra omitted the expected group
+claim from the access token.
+
 The database must provide `dbo.colsp_ListPermits` with `systemId`, `startDate`,
 and `endDate` parameters, the two submission procedures, the checked-in
 `colsp_GetPermitPeriods` and `colsp_UpdatePermit` procedures, and the
@@ -106,6 +111,10 @@ npm run build     # compile TypeScript to dist/
 npm test          # run API tests
 npm start         # run the compiled server
 ```
+
+These commands run from `packages\api`. From the repository root, use
+`npm --workspace packages/api run dev`, `npm --workspace packages/api run build`,
+or `npm --workspace packages/api test`.
 
 ## Endpoint example
 

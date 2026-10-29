@@ -65,9 +65,20 @@ npm test         # run app tests
 npm run preview  # preview the production build on port 4173
 ```
 
+These commands run from `packages\app`. From the repository root, use
+`npm --workspace packages/app run dev`, `npm --workspace packages/app run build`,
+or `npm --workspace packages/app test`.
+
 The app expects the API to be running at `http://localhost:3001` during development.
 Copy `.env.example` to `.env` before running or building the client. The app uses
 the single-tenant Entra registration and requests the `AccessBurnPermitAdmin` API
 scope. It does not render the application until the protected API health check
 confirms group authorization. Production builds must receive the corresponding
 `VITE_ENTRA_*` variables.
+
+The PM2 app process runs `serve.mjs`, which serves the production build on port
+50111 and proxies `/api` requests to the API on port 3001. The production build
+also copies `public/web.config` into `dist`. On IIS, install URL Rewrite and ARR,
+enable proxying in ARR, and set the site's physical path to the app's `dist`
+directory. The IIS rules forward `/api` requests to the API on port 3001 and all
+other requests to the PM2 app on port 50111.
