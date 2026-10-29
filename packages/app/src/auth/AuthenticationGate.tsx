@@ -29,9 +29,24 @@ export default function AuthenticationGate({ children }: { children: ReactNode }
     void apiFetch('/api/health')
       .then((response) => {
         if (!response.ok) {
-          if (active) setError(response.status === 403
-            ? 'Your account is not a member of BurnPermitAdmins.'
-            : 'Your access could not be verified. Please sign in again or contact support.');
+          if (response.status === 403) {
+            return response.json().then((body: unknown) => {
+              const apiError = typeof body === 'object' && body !== null && 'error' in body
+                && typeof body.error === 'string'
+                ? body.error
+                : '';
+              if (!active) return;
+
+              if (apiError === 'BurnPermitAdmins group membership is required') {
+                setError('Your account could not be verified as a member of BurnPermitAdmins. Confirm the group assignment and Entra access-token group claims.');
+              } else if (apiError === 'Required API scope is missing') {
+                setError('Your sign-in is missing the Permit Admin API permission. Sign in again or contact support.');
+              } else {
+                setError('The API denied access. Please contact support.');
+              }
+            });
+          }
+          if (active) setError('Your access could not be verified. Please sign in again or contact support.');
           return;
         }
         if (active) setAuthorizedAccountId(account.homeAccountId);

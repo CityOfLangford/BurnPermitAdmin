@@ -1,7 +1,8 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createAuthorizationMiddleware, readAuthorizationConfig } from './auth/authorization.js';
 import { getPermitPeriods, getPermits, submitPermit, updatePermit, type PermitApplication, type PermitUpdate } from './services/permitService.js';
 import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackoutDate } from './services/blackoutDateService.js';
@@ -342,7 +343,8 @@ export function startServer() {
   });
 }
 
-const isMainModule = process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false;
+const entryPath = process.env.pm_exec_path || process.argv[1];
+const isMainModule = entryPath ? resolve(entryPath) === fileURLToPath(import.meta.url) : false;
 
 if (isMainModule) {
   startServer();

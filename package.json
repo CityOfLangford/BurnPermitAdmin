@@ -5,10 +5,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm --workspace packages/permitAdminAPI run dev\" \"npm --workspace packages/permitAdminAPP run dev\"",
-    "api": "npm --workspace packages/permitAdminAPI run dev",
-    "app": "npm --workspace packages/permitAdminAPP run dev",
-    "build": "npm --workspace packages/permitAdminAPP run build",
+    "dev": "concurrently \"npm --workspace packages/api run dev\" \"npm --workspace packages/app run dev\"",
+    "api": "npm --workspace packages/api run dev",
+    "app": "npm --workspace packages/app run dev",
+    "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces"
   },
   "devDependencies": {
