@@ -1,0 +1,15 @@
+export default function BlackoutDates() {
+    return (
+    <section className="page-shell" aria-labelledby="page-title">
+      <header className="toolbar">
+        <div>
+          <h1 id="page-title">BlackoutDates</h1>
+          <p>BlackoutDates</p>
+        </div>
+      </header>
+      <div>
+        <p>This page is ready for its management tyyyools.</p>
+      </div>
+    </section>
+  );
+}

@@ -30,10 +30,17 @@ The main list prefixes Campfire and Open Burn types with visual markers and disp
 cancelled statuses in bold red. Clicking a row opens a read-only detail view. Edit
 enables the fields, Cancel discards changes, and Save persists them through the API.
 
-## Implementation
+## Pages and implementation
 
-- `src/App.tsx` owns the table state, API request lifecycle, sorting controls, pagination,
-  modal state, form serialization, and submission feedback.
+- `src/App.tsx` provides the application layout, sidebar navigation, and hash-based
+  page selection. All Permits is the default page.
+- `src/components/AllPermits.tsx` owns the All Permits table state, API request lifecycle,
+  sorting controls, pagination, modal state, form serialization, and submission feedback.
+- `src/components/campfire.tsx`, `src/components/openburn.tsx`,
+  `src/components/blackoutdates.tsx`, `src/components/periods.tsx`,
+  `src/components/availability.tsx`, and `src/components/systemconfigs.tsx` provide
+  separate shells for the corresponding management pages.
+- `src/components/PageShell.tsx` provides shared page framing for those components.
 - `src/index.css` provides the table layout, responsive behavior, modal form, and
   loading/error presentation.
 - `src/main.tsx` mounts the React application.
