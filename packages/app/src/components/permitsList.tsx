@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { apiFetch } from '../auth/apiFetch';
 
 type PermitField = 'PermitDate' | 'PermitNumber' | 'Applicant' | 'PermitAddress' | 'PermitType' | 'PermitStatus';
@@ -148,13 +148,30 @@ export function formatDate(dateString: string | null): string {
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function buildPermitQueryParams(page: number, pageSize: number, sortField: PermitField, sortDirection: SortDirection, systemId?: number): URLSearchParams {
+export function highlightSearchMatch(value: string | null, searchTerm: string): ReactNode {
+  const search = searchTerm.trim();
+  if (!value || !search) return value || '—';
+
+  const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = value.split(new RegExp(`(${escapedSearch})`, 'gi'));
+  if (parts.length === 1) return value;
+
+  const normalizedSearch = search.toLocaleLowerCase();
+  return parts.map((part, index) => (
+    part.toLocaleLowerCase() === normalizedSearch
+      ? <mark key={`${index}-${part}`} className="search-match">{part}</mark>
+      : part
+  ));
+}
+
+export function buildPermitQueryParams(page: number, pageSize: number, sortField: PermitField, sortDirection: SortDirection, systemId?: number, search?: string): URLSearchParams {
   return new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
     sortField,
     sortDirection,
     ...(systemId === undefined ? {} : { systemId: String(systemId) }),
+    ...(search?.trim() ? { search: search.trim() } : {}),
   });
 }
 
@@ -427,6 +444,8 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [searchText, setSearchText] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
   const [sortField, setSortField] = useState<PermitField>('PermitDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [isNewPermitOpen, setIsNewPermitOpen] = useState<boolean>(false);
@@ -449,7 +468,7 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
       setLoading(true);
       setError(null);
 
-      const params = buildPermitQueryParams(page, pageSize, sortField, sortDirection, systemId);
+      const params = buildPermitQueryParams(page, pageSize, sortField, sortDirection, systemId, search);
 
       const response = await apiFetch(`/api/permits?${params.toString()}`);
       if (!response.ok) {
@@ -469,7 +488,15 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
 
   useEffect(() => {
     void fetchPermits();
-  }, [page, pageSize, sortField, sortDirection, systemId]);
+  }, [page, pageSize, sortField, sortDirection, systemId, search]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setPage(1);
+      setSearch(searchText.trim());
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [searchText]);
 
   useEffect(() => {
     void apiFetch(`/api/permit-periods${systemId === undefined ? '' : `?systemId=${systemId}`}`)
@@ -555,6 +582,15 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
           <h1>{title}</h1>
           <button type="button" className="secondary-button refresh-button" onClick={refreshPermits} disabled={loading}> ⟳ </button>
         </div>
+        <label className="permit-search">
+          <input
+            type="search"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            placeholder="Search permit number, applicant, or address"
+            aria-label="Search permits by permit number, applicant, or address"
+          />
+        </label>
         <div className="toolbar-right">
           <button type="button" className="new-permit-button" onClick={() => setIsNewPermitOpen(true)}>
             <span aria-hidden="true">+</span> New permit
@@ -610,9 +646,9 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
               rows.map((row) => (
                 <tr key={`${row.PermitNumber}-${row.PermitDate}`} className="permit-row" onClick={() => setSelectedPermit(row)}>
                   <td>{formatDate(row.PermitDate)}</td>
-                  <td>{row.PermitNumber || '—'}</td>
-                  <td>{row.Applicant || '—'}</td>
-                  <td>{row.PermitAddress || '—'}</td>
+                  <td>{highlightSearchMatch(row.PermitNumber, searchText)}</td>
+                  <td>{highlightSearchMatch(row.Applicant, searchText)}</td>
+                  <td>{highlightSearchMatch(row.PermitAddress, searchText)}</td>
                   <td>{row.PermitType ? formatPermitType(row) : '—'}</td>
                   <td className={isCancelledStatus(row.PermitStatus) ? 'cancelled-status' : ''}>{row.PermitStatus || '—'}</td>
                 </tr>

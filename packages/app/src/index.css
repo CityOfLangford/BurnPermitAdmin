@@ -127,6 +127,34 @@ select {
   gap: 1rem;
 }
 
+.permit-search {
+  flex: 1;
+  max-width: 34rem;
+}
+
+.permit-search input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #cbd5d0;
+  border-radius: 8px;
+  background: white;
+  color: #1f2937;
+  font: inherit;
+}
+
+.permit-search input:focus {
+  border-color: #318266;
+  outline: 2px solid rgba(49, 130, 102, 0.18);
+}
+
+.search-match {
+  padding: 0 0.08em;
+  border-radius: 2px;
+  background: #ffeb70;
+  color: inherit;
+}
+
 .toolbar-right label {
   display: flex;
   flex-direction: column;
@@ -695,6 +723,11 @@ tbody tr:hover {
   .toolbar-right {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .permit-search {
+    width: 100%;
+    max-width: none;
   }
 
   .pagination-row {

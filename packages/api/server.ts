@@ -60,6 +60,7 @@ app.get('/api/permits', async (req: Request, res: Response) => {
       pageSize: queryValue(req.query.pageSize),
       sortField: typeof req.query.sortField === 'string' ? req.query.sortField : null,
       sortDirection: typeof req.query.sortDirection === 'string' ? req.query.sortDirection : null,
+      search: typeof req.query.search === 'string' ? req.query.search : null,
     });
 
     res.json(result);
