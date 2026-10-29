@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { apiFetch } from '../auth/apiFetch';
 
 type BlackoutDate = {
   BlackoutDateID: number;
@@ -75,7 +76,7 @@ export default function BlackoutDates() {
         sortField,
         sortDirection,
       });
-      const response = await fetch(`/api/blackout-dates?${params.toString()}`);
+      const response = await apiFetch(`/api/blackout-dates?${params.toString()}`);
       if (!response.ok) throw new Error(await errorMessage(response, 'Unable to load blackout dates'));
       const payload = await response.json() as BlackoutDateResponse;
       setRows(payload.data);
@@ -137,7 +138,7 @@ export default function BlackoutDates() {
     setSaving(true);
     setModalError(null);
     try {
-      const response = await fetch(editingDate ? `/api/blackout-dates/${editingDate.BlackoutDateID}` : '/api/blackout-dates', {
+      const response = await apiFetch(editingDate ? `/api/blackout-dates/${editingDate.BlackoutDateID}` : '/api/blackout-dates', {
         method: editingDate ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ TypeID: Number(draft.TypeID), BlackoutDate: draft.BlackoutDate }),

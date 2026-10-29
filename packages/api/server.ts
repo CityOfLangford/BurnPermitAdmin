@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { pathToFileURL } from 'node:url';
+import { createAuthorizationMiddleware, readAuthorizationConfig } from './auth/authorization.js';
 import { getPermitPeriods, getPermits, submitPermit, updatePermit, type PermitApplication, type PermitUpdate } from './services/permitService.js';
 import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackoutDate } from './services/blackoutDateService.js';
 import {
@@ -23,6 +24,7 @@ dotenv.config();
 
 export const app = express();
 const port = Number(process.env.PORT || 3001);
+const authorizationConfig = readAuthorizationConfig();
 
 export const queryValue = (value: unknown): string | number | null => {
   if (value === undefined || value === null) return null;
@@ -32,11 +34,20 @@ export const queryValue = (value: unknown): string | number | null => {
 };
 
 app.use(cors());
+
+app.get('/api/auth-config', (_req: Request, res: Response) => {
+  res.json({ authorizationEnabled: authorizationConfig.enabled });
+});
+
+app.use(createAuthorizationMiddleware(authorizationConfig));
 app.use(express.json());
 
-app.get('/health', (_req: Request, res: Response) => {
+const healthCheck = (_req: Request, res: Response): void => {
   res.json({ status: 'ok' });
-});
+};
+
+app.get('/health', healthCheck);
+app.get('/api/health', healthCheck);
 
 app.get('/api/permits', async (req: Request, res: Response) => {
   try {

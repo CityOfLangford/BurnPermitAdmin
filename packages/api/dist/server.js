@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { pathToFileURL } from 'node:url';
+import { createAuthorizationMiddleware, readAuthorizationConfig } from './auth/authorization.js';
 import { getPermitPeriods, getPermits, submitPermit, updatePermit } from './services/permitService.js';
 import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackoutDate } from './services/blackoutDateService.js';
 import { createSystemAvailableDate, deleteSystemAvailableDate, getSystemAvailableDates, parseSystemAvailableDate, updateSystemAvailableDate, } from './services/availabilityService.js';
@@ -10,6 +11,7 @@ import { getAdminConfigurations, parseConfigurationValue, updateAdminConfigurati
 dotenv.config();
 export const app = express();
 const port = Number(process.env.PORT || 3001);
+const authorizationConfig = readAuthorizationConfig();
 export const queryValue = (value) => {
     if (value === undefined || value === null)
         return null;
@@ -20,10 +22,16 @@ export const queryValue = (value) => {
     return String(value);
 };
 app.use(cors());
-app.use(express.json());
-app.get('/health', (_req, res) => {
-    res.json({ status: 'ok' });
+app.get('/api/auth-config', (_req, res) => {
+    res.json({ authorizationEnabled: authorizationConfig.enabled });
 });
+app.use(createAuthorizationMiddleware(authorizationConfig));
+app.use(express.json());
+const healthCheck = (_req, res) => {
+    res.json({ status: 'ok' });
+};
+app.get('/health', healthCheck);
+app.get('/api/health', healthCheck);
 app.get('/api/permits', async (req, res) => {
     try {
         const result = await getPermits({

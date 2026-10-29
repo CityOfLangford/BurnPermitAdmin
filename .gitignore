@@ -4,5 +4,6 @@ packages/*/node_modules/
 packages/permitAdminAPI/.env
 packages/permitAdminAPI/dist/
 packages/permitAdminAPP/dist/
+packages/app/dist/
 .DS_Store
 npm-debug.log*

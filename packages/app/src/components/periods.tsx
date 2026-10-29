@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { apiFetch } from '../auth/apiFetch';
 import { ADMIN_PAGE_SIZE, emptyPagination, formatDate, responseError, type PaginatedResponse, type Pagination } from './adminData';
 
 type PermitPeriod = {
@@ -77,7 +78,7 @@ export default function Periods() {
         sortDirection,
         ...(typeFilter ? { typeID: typeFilter } : {}),
       });
-      const response = await fetch(`/api/periods?${params.toString()}`);
+      const response = await apiFetch(`/api/periods?${params.toString()}`);
       if (!response.ok) throw new Error(await responseError(response, 'Unable to load permit periods'));
       const payload = await response.json() as PaginatedResponse<PermitPeriod>;
       setRows(payload.data);
@@ -130,7 +131,7 @@ export default function Periods() {
     setSaving(true);
     setModalError(null);
     try {
-      const response = await fetch(editingPeriod ? `/api/periods/${editingPeriod.PeriodID}` : '/api/periods', {
+      const response = await apiFetch(editingPeriod ? `/api/periods/${editingPeriod.PeriodID}` : '/api/periods', {
         method: editingPeriod ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...draft, TypeID: Number(draft.TypeID) }),

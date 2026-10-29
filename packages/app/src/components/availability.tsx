@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { apiFetch } from '../auth/apiFetch';
 import { ADMIN_PAGE_SIZE, emptyPagination, localDateTimeInput, responseError, type PaginatedResponse, type Pagination } from './adminData';
 
 type SystemAvailableDate = {
@@ -50,7 +51,7 @@ export default function Availability() {
     setError(null);
     try {
       const params = new URLSearchParams({ page: String(page), pageSize: String(ADMIN_PAGE_SIZE) });
-      const response = await fetch(`/api/system-available-dates?${params.toString()}`);
+      const response = await apiFetch(`/api/system-available-dates?${params.toString()}`);
       if (!response.ok) throw new Error(await responseError(response, 'Unable to load availability dates'));
       const payload = await response.json() as PaginatedResponse<SystemAvailableDate>;
       setRows(payload.data);
@@ -101,7 +102,7 @@ export default function Availability() {
     setSaving(true);
     setModalError(null);
     try {
-      const response = await fetch(editingDate ? `/api/system-available-dates/${editingDate.ID}` : '/api/system-available-dates', {
+      const response = await apiFetch(editingDate ? `/api/system-available-dates/${editingDate.ID}` : '/api/system-available-dates', {
         method: editingDate ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -129,7 +130,7 @@ export default function Availability() {
     setSaving(true);
     setModalError(null);
     try {
-      const response = await fetch(`/api/system-available-dates/${editingDate.ID}`, { method: 'DELETE' });
+      const response = await apiFetch(`/api/system-available-dates/${editingDate.ID}`, { method: 'DELETE' });
       if (!response.ok) throw new Error(await responseError(response, 'Unable to delete availability date'));
       setEditorOpen(false);
       setEditingDate(null);

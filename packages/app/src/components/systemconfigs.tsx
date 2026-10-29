@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { apiFetch } from '../auth/apiFetch';
 import { ADMIN_PAGE_SIZE, emptyPagination, responseError, type PaginatedResponse, type Pagination } from './adminData';
 
 type Configuration = {
@@ -30,7 +31,7 @@ export default function SystemConfigs() {
     setError(null);
     try {
       const params = new URLSearchParams({ page: String(page), pageSize: String(ADMIN_PAGE_SIZE) });
-      const response = await fetch(`/api/configurations?${params.toString()}`);
+      const response = await apiFetch(`/api/configurations?${params.toString()}`);
       if (!response.ok) throw new Error(await responseError(response, 'Unable to load configurations'));
       const payload = await response.json() as PaginatedResponse<Configuration>;
       setRows(payload.data);
@@ -66,7 +67,7 @@ export default function SystemConfigs() {
     setSaving(true);
     setModalError(null);
     try {
-      const response = await fetch(`/api/configurations/${editingConfiguration.ConfigurationID}`, {
+      const response = await apiFetch(`/api/configurations/${editingConfiguration.ConfigurationID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Value: draftValue }),

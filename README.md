@@ -6,13 +6,13 @@ Server and a Vite-served React client.
 
 ## Project structure
 
-- `packages/permitAdminAPI` - Express API, SQL Server access, permit mapping, sorting, and pagination.
-- `packages/permitAdminAPP` - React/Vite user interface for browsing permit data.
+- `packages/api` - Express API, SQL Server access, permit mapping, sorting, and pagination.
+- `packages/app` - React/Vite user interface for browsing permit data.
 
 See the package READMEs for implementation details:
 
-- [API README](packages/permitAdminAPI/README.md)
-- [App README](packages/permitAdminAPP/README.md)
+- [API README](packages/api/README.md)
+- [App README](packages/app/README.md)
 
 ## Prerequisites
 
@@ -30,11 +30,14 @@ npm install
 Create the API environment file and set the database values. In Windows Command Prompt:
 
 ```bat
-copy packages\permitAdminAPI\.env.example packages\permitAdminAPI\.env
+copy packages\api\.env.example packages\api\.env
+copy packages\app\.env.example packages\app\.env
 ```
 
-The environment file supports `PORT`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`,
-`DB_PASSWORD`, `DB_ENCRYPT`, and `DB_TRUST_SERVER_CERTIFICATE`.
+Keep `AUTHORIZATION_ENABLED=true` in the API environment outside isolated local
+development and tests. The app uses the existing Entra registration and requires
+membership in the `BurnPermitAdmins` group. See the package READMEs for registration
+configuration and environment settings.
 
 ## Run locally
 

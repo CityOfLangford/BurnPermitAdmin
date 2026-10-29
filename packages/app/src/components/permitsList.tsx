@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { apiFetch } from '../auth/apiFetch';
 
 type PermitField = 'PermitDate' | 'PermitNumber' | 'Applicant' | 'PermitAddress' | 'PermitType' | 'PermitStatus';
 type SortDirection = 'asc' | 'desc';
@@ -282,7 +283,7 @@ function PermitDetails({ permit, permitPeriods, onBack, onSaved }: PermitDetails
     setError(null);
 
     try {
-      const response = await fetch(`/api/permits/${permit.PermitID}`, {
+      const response = await apiFetch(`/api/permits/${permit.PermitID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -450,7 +451,7 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
 
       const params = buildPermitQueryParams(page, pageSize, sortField, sortDirection, systemId);
 
-      const response = await fetch(`/api/permits?${params.toString()}`);
+      const response = await apiFetch(`/api/permits?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Unable to load permits');
       }
@@ -471,7 +472,7 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
   }, [page, pageSize, sortField, sortDirection, systemId]);
 
   useEffect(() => {
-    void fetch(`/api/permit-periods${systemId === undefined ? '' : `?systemId=${systemId}`}`)
+    void apiFetch(`/api/permit-periods${systemId === undefined ? '' : `?systemId=${systemId}`}`)
       .then(async (response) => response.ok ? response.json() as Promise<PermitPeriod[]> : [])
       .then((periods) => {
         setPermitPeriods(periods);
@@ -516,7 +517,7 @@ export default function AllPermits({ systemId, title = 'All Burn Permits' }: All
     setSubmitError(null);
 
     try {
-      const response = await fetch('/api/permits', {
+      const response = await apiFetch('/api/permits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildPermitApplication(permitForm)),
