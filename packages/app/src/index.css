@@ -137,8 +137,14 @@ body {
   white-space: nowrap;
 }
 
+.health-service-name {
+  color: #374151;
+  white-space: nowrap;
+}
+
 .health-system-details {
   position: relative;
+  margin-left: auto;
 }
 
 .health-system-details summary {

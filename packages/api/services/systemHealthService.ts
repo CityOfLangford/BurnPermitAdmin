@@ -109,7 +109,7 @@ export async function checkBurnPermitApi(
       url,
       statusCode: null,
       uptime: null,
-      message: `Unable to reach BURNPERMITAPI: ${reason}`,
+      message: `Unable to reach BurnPermitAPI: ${reason}`,
     };
   } finally {
     clearTimeout(timeout);

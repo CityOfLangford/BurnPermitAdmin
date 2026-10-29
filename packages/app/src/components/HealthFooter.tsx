@@ -42,27 +42,27 @@ type SystemHealthResponse = {
 };
 
 function appStatusLabel(system: SystemHealth): string {
-  return system.heartbeat.status === 'reachable' ? 'App reachable' : 'App unreachable';
+  return system.heartbeat.status === 'reachable' ? 'Reachable' : 'UNreachable';
 }
 
 function appStatusClass(system: SystemHealth): string {
-  return system.heartbeat.status === 'reachable' ? 'health-ok' : 'health-error';
+  return system.heartbeat.status === 'reachable' ? 'Health-OK' : 'Health-Error';
 }
 
 function systemOpenLabel(system: SystemHealth): string {
-  if (system.status === 'unavailable' || system.isOpen === null) return 'System state unavailable';
-  return system.isOpen ? 'System open' : 'System closed';
+  if (system.status === 'unavailable' || system.isOpen === null) return 'Sys state unavail.';
+  return system.isOpen ? 'System Open' : 'System Closed';
 }
 
 function systemOpenClass(system: SystemHealth): string {
-  if (system.status === 'unavailable' || system.isOpen === null) return 'health-unknown';
-  return system.isOpen ? 'health-ok' : 'health-closed';
+  if (system.status === 'unavailable' || system.isOpen === null) return 'Health-Unknown';
+  return system.isOpen ? 'Health-OK' : 'Health-Closed';
 }
 
 function HealthDetails({ system }: { system: SystemHealth }) {
   return (
     <details className="health-system-details">
-      <summary aria-label={`${system.name} health details`}>{system.name}</summary>
+      <summary aria-label={`${system.name} health details`}>Details</summary>
       <div className="health-details-panel">
         <div><strong>Application:</strong> {appStatusLabel(system)}</div>
         <div><strong>Heartbeat:</strong> {system.heartbeat.url}</div>
@@ -113,9 +113,9 @@ export default function HealthFooter() {
         {health ? (
           <>
             <div className={`health-system-check ${health.burnPermitApi.status === 'reachable' ? 'health-ok' : 'health-error'}`}>
-              <span>BURNPERMITAPI: {health.burnPermitApi.status === 'reachable' ? 'Available' : 'Unreachable'}</span>
+              <span>API: {health.burnPermitApi.status === 'reachable' ? 'Available' : 'Unreachable'}</span>
               <details className="health-system-details">
-                <summary aria-label="BURNPERMITAPI health details">Details</summary>
+                <summary aria-label="API health details">Details</summary>
                 <div className="health-details-panel">
                   <div><strong>Endpoint:</strong> {health.burnPermitApi.url}</div>
                   <div><strong>HTTP status:</strong> {health.burnPermitApi.statusCode ?? 'No response'}</div>
@@ -129,6 +129,7 @@ export default function HealthFooter() {
             </span>
             {health.systems.map((system) => (
               <div className="health-system-check" key={system.typeID}>
+                <strong className="health-service-name">{system.name}:</strong>
                 <span className={`${appStatusClass(system)} health-app-status`}>{appStatusLabel(system)}</span>
                 <span className={`${systemOpenClass(system)} health-open-status`}>{systemOpenLabel(system)}</span>
                 <HealthDetails system={system} />

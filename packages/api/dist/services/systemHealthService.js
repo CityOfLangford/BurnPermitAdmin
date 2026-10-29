@@ -64,7 +64,7 @@ export async function checkBurnPermitApi(baseUrl = process.env.PUBLIC_API_URL ??
             url,
             statusCode: null,
             uptime: null,
-            message: `Unable to reach BURNPERMITAPI: ${reason}`,
+            message: `Unable to reach BurnPermitAPI: ${reason}`,
         };
     }
     finally {
