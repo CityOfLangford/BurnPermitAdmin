@@ -46,3 +46,43 @@ test('blackout date endpoints reject invalid data before querying the database',
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
 });
+
+test('admin endpoints reject invalid availability, period, and configuration data', async () => {
+  const server = app.listen(0);
+  try {
+    const address = server.address();
+    assert.ok(address && typeof address !== 'string');
+    const baseUrl = `http://127.0.0.1:${address.port}/api`;
+    const postJson = (url, body) => fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const availabilityResponse = await postJson(`${baseUrl}/system-available-dates`, {
+      typeID: 1,
+      dateSysAvailableChange: '2026-10-28T15:30',
+      flagSystemAvailable: true,
+    });
+    assert.equal(availabilityResponse.status, 400);
+
+    const periodResponse = await postJson(`${baseUrl}/periods`, {
+      Name: '',
+      TypeID: 1,
+      StartDate: '2026-01-01',
+      EndDate: '2026-12-31',
+      BookingStartDate: '2025-12-01',
+      BookingEndDate: '2026-11-30',
+    });
+    assert.equal(periodResponse.status, 400);
+
+    const configurationResponse = await fetch(`${baseUrl}/configurations/1`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Value: 1 }),
+    });
+    assert.equal(configurationResponse.status, 400);
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+});
