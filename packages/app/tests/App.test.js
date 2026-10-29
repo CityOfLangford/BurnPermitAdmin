@@ -1,7 +1,34 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { buildPermitApplication, buildPermitQueryParams, formatDate, formatPermitType, getCampfireEndTime, getPageNumbers, getOpenBurnPeriods, isCancelledStatus, printPermit, shouldShowTopPagination, toggleSort } from '../src/App.tsx';
+import { apiFetch, setApiAuthorizationEnabled } from '../src/auth/apiFetch.ts';
+import { getRedirectUri } from '../src/auth/entra.ts';
 
+test('apiFetch makes ordinary requests when API authorization is disabled', async () => {
+  const originalFetch = globalThis.fetch;
+  const expectedResponse = new Response('ok', { status: 200 });
+  let called = false;
+  globalThis.fetch = async (input, init) => {
+    called = true;
+    assert.equal(input, '/api/permits');
+    assert.deepEqual(init, { method: 'GET' });
+    return expectedResponse;
+  };
+
+  try {
+    setApiAuthorizationEnabled(false);
+    assert.equal(await apiFetch('/api/permits', { method: 'GET' }), expectedResponse);
+    assert.equal(called, true);
+  } finally {
+    setApiAuthorizationEnabled(true);
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('getRedirectUri exactly matches the Entra-registered root redirect URI', () => {
+  assert.equal(getRedirectUri('https://burn-admin.langford.ca'), 'https://burn-admin.langford.ca/');
+  assert.equal(getRedirectUri('http://localhost:5173/'), 'http://localhost:5173/');
+});
 test('formatDate handles empty, invalid, and valid dates', () => {
   assert.equal(formatDate(null), '—');
   assert.equal(formatDate('not-a-date'), 'not-a-date');

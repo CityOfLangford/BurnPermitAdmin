@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { app, queryValue } from '../server.js';
 
+process.env.AUTHORIZATION_ENABLED = 'false';
+const { app, queryValue } = await import('../server.js');
 test('queryValue normalizes query parameter shapes', () => {
   assert.equal(queryValue(undefined), null);
   assert.equal(queryValue(['first', 'second']), 'first');
@@ -14,9 +15,17 @@ test('health endpoint reports the API status', async () => {
   try {
     const address = server.address();
     assert.ok(address && typeof address !== 'string');
+    const authConfigResponse = await fetch(`http://127.0.0.1:${address.port}/api/auth-config`);
+    assert.equal(authConfigResponse.status, 200);
+    assert.deepEqual(await authConfigResponse.json(), { authorizationEnabled: false });
+
     const response = await fetch(`http://127.0.0.1:${address.port}/health`);
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), { status: 'ok' });
+
+    const apiHealthResponse = await fetch(`http://127.0.0.1:${address.port}/api/health`);
+    assert.equal(apiHealthResponse.status, 200);
+    assert.deepEqual(await apiHealthResponse.json(), { status: 'ok' });
   } finally {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
