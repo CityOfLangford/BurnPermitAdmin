@@ -13,6 +13,9 @@ to the Permit Admin app.
 - Provides `PUT /api/permits/:id` for updating editable permit details.
 - Provides `GET /api/permit-periods` for the current Open Burn permit period options.
 - Provides paginated `GET /api/blackout-dates` and `POST`/`PUT` endpoints for managing blackout dates.
+- Provides paginated campfire availability records at `/api/system-available-dates`, with create, update, and delete endpoints.
+- Provides paginated, sortable `/api/periods` endpoints for creating and updating permit periods.
+- Provides paginated `/api/configurations` endpoints for viewing and updating `AdminEditable` configuration values.
 - Reads and writes blackout dates directly with parameterized SQL Server queries; no Prisma dependency is used.
 - Calls the existing `dbo.colsp_ListPermits` stored procedure through `mssql`.
 - Calls `dbo.colsp_SubmitOpenBurnPermitApplication` or
@@ -36,7 +39,8 @@ Copy `.env.example` to `.env` and set the database connection values:
 The database must provide `dbo.colsp_ListPermits` with `systemId`, `startDate`,
 and `endDate` parameters, the two submission procedures, the checked-in
 `colsp_GetPermitPeriods` and `colsp_UpdatePermit` procedures, and the
-`dbo.BlackoutDates` table.
+`dbo.BlackoutDates`, `dbo.SystemAvailableDates`, `dbo.PermitPeriods`, and
+`dbo.Configurations` tables.
 
 ## Implementation
 
@@ -51,6 +55,9 @@ and `endDate` parameters, the two submission procedures, the checked-in
     Open Burn and Campfire period definitions.
 - `services/blackoutDateService.ts` lists, creates, and updates blackout dates in
     `dbo.BlackoutDates` using parameterized SQL queries.
+- `services/availabilityService.ts`, `services/permitPeriodAdminService.ts`, and
+    `services/configurationService.ts` manage system availability, permit periods,
+    and admin-editable configuration values using parameterized SQL queries.
 - `tests/` covers query normalization, database defaults, service behavior, and the health route.
 
 Sorting is restricted to the known permit fields and defaults to `PermitDate` descending.
@@ -85,6 +92,23 @@ returns blackout dates with pagination metadata. `sortField` accepts `TypeID` or
 `TypeID` of `1` (Open Burn) or `2` (Campfire), and `BlackoutDate` as an ISO date
 string such as `2026-10-28`. Dates before `1753-01-01` are rejected to match the
 SQL Server `datetime` column range.
+
+## System availability, permit periods, and configurations
+
+`GET /api/system-available-dates?page=1&pageSize=20` returns paginated Campfire
+availability entries. `POST` creates an entry, `PUT /api/system-available-dates/:id`
+updates one, and `DELETE /api/system-available-dates/:id` removes one. Entries are
+restricted to `typeID = 2` (Campfire).
+
+`GET /api/periods?page=1&pageSize=20&sortField=PeriodID&sortDirection=desc`
+returns paginated permit periods and accepts an optional `typeID` filter (`1` for
+Open Burn or `2` for Campfire). `POST /api/periods` creates a period and
+`PUT /api/periods/:id` updates one. The existing `GET /api/permit-periods`
+endpoint remains the permit-form options API and is unchanged.
+
+`GET /api/configurations?page=1&pageSize=20` returns `AdminEditable`
+configurations. `PUT /api/configurations/:id` accepts a string `Value`; the
+`SYSTEMACTIVE` setting is kept to `1` or `0`.
 
 ## Create permit endpoint
 

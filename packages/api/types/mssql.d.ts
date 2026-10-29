@@ -33,5 +33,8 @@ declare module 'mssql' {
   export const Int: unknown;
   export const Date: unknown;
   export const DateTime: unknown;
+  export const Bit: unknown;
+  export const MAX: number;
+  export function VarChar(length?: number): unknown;
   export function NVarChar(length?: number): unknown;
 }

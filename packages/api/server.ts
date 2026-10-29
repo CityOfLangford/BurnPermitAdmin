@@ -4,6 +4,20 @@ import dotenv from 'dotenv';
 import { pathToFileURL } from 'node:url';
 import { getPermitPeriods, getPermits, submitPermit, updatePermit, type PermitApplication, type PermitUpdate } from './services/permitService.js';
 import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackoutDate } from './services/blackoutDateService.js';
+import {
+  createSystemAvailableDate,
+  deleteSystemAvailableDate,
+  getSystemAvailableDates,
+  parseSystemAvailableDate,
+  updateSystemAvailableDate,
+} from './services/availabilityService.js';
+import {
+  createAdminPermitPeriod,
+  getAdminPermitPeriods,
+  parseAdminPermitPeriod,
+  updateAdminPermitPeriod,
+} from './services/permitPeriodAdminService.js';
+import { getAdminConfigurations, parseConfigurationValue, updateAdminConfiguration } from './services/configurationService.js';
 
 dotenv.config();
 
@@ -99,6 +113,151 @@ app.put('/api/blackout-dates/:id', async (req: Request, res: Response) => {
   } catch (error: unknown) {
     console.error('Error updating blackout date:', error);
     res.status(500).json({ error: 'Failed to update blackout date' });
+  }
+});
+
+app.get('/api/system-available-dates', async (req: Request, res: Response) => {
+  try {
+    res.json(await getSystemAvailableDates(req.query.page, req.query.pageSize));
+  } catch (error: unknown) {
+    console.error('Error fetching system availability dates:', error);
+    res.status(500).json({ error: 'Failed to fetch system availability dates' });
+  }
+});
+
+app.post('/api/system-available-dates', async (req: Request, res: Response) => {
+  const date = parseSystemAvailableDate(req.body);
+  if (!date) {
+    res.status(400).json({ error: 'A valid campfire availability date, status, and comments are required' });
+    return;
+  }
+
+  try {
+    res.status(201).json(await createSystemAvailableDate(date));
+  } catch (error: unknown) {
+    console.error('Error creating system availability date:', error);
+    res.status(500).json({ error: 'Failed to create system availability date' });
+  }
+});
+
+app.put('/api/system-available-dates/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const date = parseSystemAvailableDate(req.body);
+  if (!Number.isInteger(id) || id < 1 || !date) {
+    res.status(400).json({ error: 'A valid system availability ID, date, status, and comments are required' });
+    return;
+  }
+
+  try {
+    const updatedDate = await updateSystemAvailableDate(id, date);
+    if (!updatedDate) {
+      res.status(404).json({ error: 'System availability date not found' });
+      return;
+    }
+    res.json(updatedDate);
+  } catch (error: unknown) {
+    console.error('Error updating system availability date:', error);
+    res.status(500).json({ error: 'Failed to update system availability date' });
+  }
+});
+
+app.delete('/api/system-available-dates/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    res.status(400).json({ error: 'A valid system availability ID is required' });
+    return;
+  }
+
+  try {
+    if (!await deleteSystemAvailableDate(id)) {
+      res.status(404).json({ error: 'System availability date not found' });
+      return;
+    }
+    res.status(204).send();
+  } catch (error: unknown) {
+    console.error('Error deleting system availability date:', error);
+    res.status(500).json({ error: 'Failed to delete system availability date' });
+  }
+});
+
+app.get('/api/periods', async (req: Request, res: Response) => {
+  try {
+    res.json(await getAdminPermitPeriods(
+      req.query.page,
+      req.query.pageSize,
+      req.query.sortField,
+      req.query.sortDirection,
+      req.query.typeID,
+    ));
+  } catch (error: unknown) {
+    console.error('Error fetching permit periods:', error);
+    res.status(500).json({ error: 'Failed to fetch permit periods' });
+  }
+});
+
+app.post('/api/periods', async (req: Request, res: Response) => {
+  const period = parseAdminPermitPeriod(req.body);
+  if (!period) {
+    res.status(400).json({ error: 'A permit type, name, and valid period and booking dates are required' });
+    return;
+  }
+
+  try {
+    res.status(201).json(await createAdminPermitPeriod(period));
+  } catch (error: unknown) {
+    console.error('Error creating permit period:', error);
+    res.status(500).json({ error: 'Failed to create permit period' });
+  }
+});
+
+app.put('/api/periods/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const period = parseAdminPermitPeriod(req.body);
+  if (!Number.isInteger(id) || id < 1 || !period) {
+    res.status(400).json({ error: 'A valid permit period ID, permit type, name, and dates are required' });
+    return;
+  }
+
+  try {
+    const updatedPeriod = await updateAdminPermitPeriod(id, period);
+    if (!updatedPeriod) {
+      res.status(404).json({ error: 'Permit period not found' });
+      return;
+    }
+    res.json(updatedPeriod);
+  } catch (error: unknown) {
+    console.error('Error updating permit period:', error);
+    res.status(500).json({ error: 'Failed to update permit period' });
+  }
+});
+
+app.get('/api/configurations', async (req: Request, res: Response) => {
+  try {
+    res.json(await getAdminConfigurations(req.query.page, req.query.pageSize));
+  } catch (error: unknown) {
+    console.error('Error fetching configurations:', error);
+    res.status(500).json({ error: 'Failed to fetch configurations' });
+  }
+});
+
+app.put('/api/configurations/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const value = parseConfigurationValue(req.body);
+  if (!Number.isInteger(id) || id < 1 || value === null) {
+    res.status(400).json({ error: 'A valid configuration ID and string value are required' });
+    return;
+  }
+
+  try {
+    const updatedConfiguration = await updateAdminConfiguration(id, value);
+    if (!updatedConfiguration) {
+      res.status(404).json({ error: 'Admin-editable configuration not found' });
+      return;
+    }
+    res.json(updatedConfiguration);
+  } catch (error: unknown) {
+    console.error('Error updating configuration:', error);
+    res.status(500).json({ error: 'Failed to update configuration' });
   }
 });
 

@@ -543,7 +543,8 @@ tbody tr:hover {
 }
 
 .form-grid input,
-.form-grid select {
+.form-grid select,
+.form-grid textarea {
   width: 100%;
   min-height: 2.5rem;
   padding: 0.55rem 0.7rem;
@@ -554,9 +555,62 @@ tbody tr:hover {
 }
 
 .form-grid input:focus,
-.form-grid select:focus {
+.form-grid select:focus,
+.form-grid textarea:focus {
   outline: 2px solid #8dc8a8;
   outline-offset: 1px;
+}
+
+.form-grid textarea {
+  resize: vertical;
+  font: inherit;
+}
+
+.full-width-field {
+  grid-column: 1 / -1;
+}
+
+.warning-panel {
+  margin-bottom: 1rem;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.configuration-value {
+  max-width: 32rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.configuration-comments {
+  color: #52635b;
+  font-size: 0.9rem;
+}
+
+.delete-confirmation {
+  margin-right: auto;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.danger-button {
+  margin-right: auto;
+  border: 1px solid #b91c1c;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  background: #fff;
+  color: #b91c1c;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .modal-error {
