@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { pathToFileURL } from 'node:url';
 import { getPermitPeriods, getPermits, submitPermit, updatePermit, type PermitApplication, type PermitUpdate } from './services/permitService.js';
+import { createBlackoutDate, getBlackoutDates, parseBlackoutDate, updateBlackoutDate } from './services/blackoutDateService.js';
 
 dotenv.config();
 
@@ -53,6 +54,51 @@ app.get('/api/permit-periods', async (req: Request, res: Response) => {
   } catch (error: unknown) {
     console.error('Error fetching permit periods:', error);
     res.status(500).json({ error: 'Failed to fetch permit periods' });
+  }
+});
+
+app.get('/api/blackout-dates', async (req: Request, res: Response) => {
+  try {
+    res.json(await getBlackoutDates(req.query.page, req.query.pageSize, req.query.sortField, req.query.sortDirection));
+  } catch (error: unknown) {
+    console.error('Error fetching blackout dates:', error);
+    res.status(500).json({ error: 'Failed to fetch blackout dates' });
+  }
+});
+
+app.post('/api/blackout-dates', async (req: Request, res: Response) => {
+  const blackoutDate = parseBlackoutDate(req.body);
+  if (!blackoutDate) {
+    res.status(400).json({ error: 'A permit type of 1 or 2 and a valid blackout date are required' });
+    return;
+  }
+
+  try {
+    res.status(201).json(await createBlackoutDate(blackoutDate));
+  } catch (error: unknown) {
+    console.error('Error creating blackout date:', error);
+    res.status(500).json({ error: 'Failed to create blackout date' });
+  }
+});
+
+app.put('/api/blackout-dates/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const blackoutDate = parseBlackoutDate(req.body);
+  if (!Number.isInteger(id) || id < 1 || !blackoutDate) {
+    res.status(400).json({ error: 'A valid blackout date ID, permit type, and date are required' });
+    return;
+  }
+
+  try {
+    const updatedDate = await updateBlackoutDate(id, blackoutDate);
+    if (!updatedDate) {
+      res.status(404).json({ error: 'Blackout date not found' });
+      return;
+    }
+    res.json(updatedDate);
+  } catch (error: unknown) {
+    console.error('Error updating blackout date:', error);
+    res.status(500).json({ error: 'Failed to update blackout date' });
   }
 });
 

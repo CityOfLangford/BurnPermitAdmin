@@ -10,6 +10,7 @@ test('formatDate handles empty, invalid, and valid dates', () => {
 
 test('buildPermitQueryParams serializes the current table state', () => {
   assert.equal(buildPermitQueryParams(2, 50, 'Applicant', 'asc').toString(), 'page=2&pageSize=50&sortField=Applicant&sortDirection=asc');
+  assert.equal(buildPermitQueryParams(1, 10, 'PermitDate', 'desc', 2).toString(), 'page=1&pageSize=10&sortField=PermitDate&sortDirection=desc&systemId=2');
 });
 
 test('getPageNumbers handles empty and multi-page results', () => {

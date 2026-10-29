@@ -1,15 +1,5 @@
+import PermitsList from './permitsList';
+
 export default function Campfire() {
-    return (
-    <section className="page-shell" aria-labelledby="page-title">
-      <header className="toolbar">
-        <div>
-          <h1 id="page-title">Campfire</h1>
-          <p>Campfire</p>
-        </div>
-      </header>
-      <div>
-        <p>This page is ready for its management tyyyools.</p>
-      </div>
-    </section>
-  );
+  return <PermitsList systemId={2} title="Campfire Permits" />;
 }

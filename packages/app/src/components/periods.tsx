@@ -8,7 +8,7 @@ export default function Periods() {
         </div>
       </header>
       <div>
-        <p>This page is ready for its management tyyyools.</p>
+        <p>This page is ready for implementation.</p>
       </div>
     </section>
   );

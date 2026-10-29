@@ -147,12 +147,13 @@ export function formatDate(dateString: string | null): string {
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function buildPermitQueryParams(page: number, pageSize: number, sortField: PermitField, sortDirection: SortDirection): URLSearchParams {
+export function buildPermitQueryParams(page: number, pageSize: number, sortField: PermitField, sortDirection: SortDirection, systemId?: number): URLSearchParams {
   return new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
     sortField,
     sortDirection,
+    ...(systemId === undefined ? {} : { systemId: String(systemId) }),
   });
 }
 
@@ -414,7 +415,12 @@ function DetailField({ label, value, editing, type = 'text', required = true, on
   );
 }
 
-export default function AllPermits() {
+type AllPermitsProps = {
+  systemId?: number;
+  title?: string;
+};
+
+export default function AllPermits({ systemId, title = 'All Burn Permits' }: AllPermitsProps) {
   const [rows, setRows] = useState<PermitRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -442,7 +448,7 @@ export default function AllPermits() {
       setLoading(true);
       setError(null);
 
-      const params = buildPermitQueryParams(page, pageSize, sortField, sortDirection);
+      const params = buildPermitQueryParams(page, pageSize, sortField, sortDirection, systemId);
 
       const response = await fetch(`/api/permits?${params.toString()}`);
       if (!response.ok) {
@@ -462,10 +468,10 @@ export default function AllPermits() {
 
   useEffect(() => {
     void fetchPermits();
-  }, [page, pageSize, sortField, sortDirection]);
+  }, [page, pageSize, sortField, sortDirection, systemId]);
 
   useEffect(() => {
-    void fetch('/api/permit-periods')
+    void fetch(`/api/permit-periods${systemId === undefined ? '' : `?systemId=${systemId}`}`)
       .then(async (response) => response.ok ? response.json() as Promise<PermitPeriod[]> : [])
       .then((periods) => {
         setPermitPeriods(periods);
@@ -476,7 +482,7 @@ export default function AllPermits() {
         }
       })
       .catch(() => setPermitPeriods([]));
-  }, []);
+  }, [systemId]);
 
   const handleSort = (field: PermitField): void => {
     const nextSort = toggleSort(sortField, sortDirection, field);
@@ -545,7 +551,7 @@ export default function AllPermits() {
     <div className="page-shell">
       <header className="toolbar">
         <div>
-          <h1>All Burn Permits</h1>
+          <h1>{title}</h1>
           <button type="button" className="secondary-button refresh-button" onClick={refreshPermits} disabled={loading}> ⟳ </button>
         </div>
         <div className="toolbar-right">

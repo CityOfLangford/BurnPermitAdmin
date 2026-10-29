@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AllPermits from './components/allPermits';
+import AllPermits from './components/permitsList';
 import Availability from './components/availability';
 import BlackoutDates from './components/blackoutdates';
 import Campfire from './components/campfire';
@@ -19,7 +19,7 @@ export {
   printPermit,
   shouldShowTopPagination,
   toggleSort,
-} from './components/allPermits';
+} from './components/permitsList';
 
 type PageId = 'permits' | 'campfire' | 'open-burn' | 'blackout-dates' | 'periods' | 'availability' | 'system-configs';
 

@@ -21,3 +21,28 @@ test('health endpoint reports the API status', async () => {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
 });
+
+test('blackout date endpoints reject invalid data before querying the database', async () => {
+  const server = app.listen(0);
+  try {
+    const address = server.address();
+    assert.ok(address && typeof address !== 'string');
+    const baseUrl = `http://127.0.0.1:${address.port}/api/blackout-dates`;
+    const createResponse = await fetch(baseUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ TypeID: 3, BlackoutDate: '2026-10-28' }),
+    });
+    assert.equal(createResponse.status, 400);
+    assert.deepEqual(await createResponse.json(), { error: 'A permit type of 1 or 2 and a valid blackout date are required' });
+
+    const updateResponse = await fetch(`${baseUrl}/invalid-id`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ TypeID: 1, BlackoutDate: '2026-10-28' }),
+    });
+    assert.equal(updateResponse.status, 400);
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+});

@@ -34,7 +34,8 @@ tsx --test tests/*.test.js
 - `db.test.js` verifies safe database configuration defaults and SQL type availability.
 - `mssql.test.js` verifies the local MSSQL declaration surface used by the TypeScript build.
 - `permitService.test.js` covers integer/date parsing, sort normalization, sorting, pagination, permit-period lookup, open-burn submission, Campfire submission, status conversion, and permit updates.
-- `server.test.js` covers query parameter normalization and the `/health` endpoint.
+- `blackoutDateService.test.js` covers blackout date validation, SQL parameter binding, result mapping, and pagination.
+- `server.test.js` covers query parameter normalization, the `/health` endpoint, and blackout date request validation.
 
 ## Test boundaries
 
