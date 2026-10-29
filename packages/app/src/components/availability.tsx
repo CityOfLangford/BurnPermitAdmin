@@ -167,7 +167,7 @@ export default function Availability() {
                   <tr key={row.ID} className="permit-row" onClick={() => openEditDate(row)}>
                     <td>{row.typeID === 2 ? '⛺ Campfire' : row.typeID ?? '—'}</td>
                     <td>{formatAvailabilityDate(row.dateSysAvailableChange)}</td>
-                    <td>{row.flagSystemAvailable === true ? 'On' : row.flagSystemAvailable === false ? 'Off' : '—'}</td>
+                    <td>{row.flagSystemAvailable === true ? '💡 On' : row.flagSystemAvailable === false ? '⛔ Off' : '—'}</td>
                     <td>{row.comments || '—'}</td>
                   </tr>
                 ))}
