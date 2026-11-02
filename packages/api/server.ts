@@ -25,7 +25,7 @@ import { getSystemHealth } from './services/systemHealthService.js';
 dotenv.config();
 
 export const app = express();
-const port = Number(process.env.PORT || 3001);
+const port = Number(process.env.PORT || 50110);
 const authorizationConfig = readAuthorizationConfig();
 
 export const queryValue = (value: unknown): string | number | null => {

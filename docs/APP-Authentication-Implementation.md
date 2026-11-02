@@ -18,7 +18,7 @@ Replace the `<PLACEHOLDERS>` with real values.
 | `<APP_PACKAGE>` | Workspace folder of the React app (for example `packages/app`) |
 | `<DEV_URL>` | Local dev URL, for example `http://localhost:5173/` |
 | `<PROD_URL>` | Production URL |
-| `<API_PORT>` | Local API port, for example `3001` |
+| `<API_PORT>` | Local API port, for example `50110` |
 
 ## How it works
 

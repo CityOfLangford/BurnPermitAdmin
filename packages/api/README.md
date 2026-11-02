@@ -5,7 +5,7 @@ to the Permit Admin app.
 
 ## Responsibilities
 
-- Starts an Express server on port `3001` by default.
+- Starts an Express server on port `50110` by default.
 - Enables CORS and JSON request handling.
 - Provides `GET /health` for a lightweight status check.
 - Provides authenticated `GET /api/system-health` to check the database and
@@ -31,7 +31,7 @@ is enabled by default; keep it enabled in production:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `PORT` | `3001` | HTTP port for the API |
+| `PORT` | `50110` | HTTP port for the API |
 | `DB_HOST` | `localhost` | SQL Server host |
 | `DB_PORT` | `1433` | SQL Server port |
 | `DB_NAME` | none | Database name |
