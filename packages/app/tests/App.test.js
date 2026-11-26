@@ -32,7 +32,8 @@ test('getRedirectUri exactly matches the Entra-registered root redirect URI', ()
 test('formatDate handles empty, invalid, and valid dates', () => {
   assert.equal(formatDate(null), '—');
   assert.equal(formatDate('not-a-date'), 'not-a-date');
-  assert.equal(formatDate('2024-01-02'), new Date('2024-01-02').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }));
+  assert.equal(formatDate('2024-01-02'), new Date('2024-01-02T00:00:00.000Z').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }));
+  assert.equal(formatDate('2024-02-31'), '2024-02-31');
 });
 
 test('highlightSearchMatch highlights case-insensitive partial text and preserves surrounding text', () => {
