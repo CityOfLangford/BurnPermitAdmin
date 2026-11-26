@@ -143,9 +143,16 @@ const columns: Array<{ key: PermitField; label: string }> = [
 
 export function formatDate(dateString: string | null): string {
   if (!dateString) return '—';
-  const date = new Date(dateString);
+  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+  const date = new Date(isDateOnly ? `${dateString}T00:00:00.000Z` : dateString);
   if (Number.isNaN(date.getTime())) return dateString;
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  if (isDateOnly && date.toISOString().slice(0, 10) !== dateString) return dateString;
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    ...(isDateOnly ? { timeZone: 'UTC' } : {}),
+  });
 }
 
 export function highlightSearchMatch(value: string | null, searchTerm: string): ReactNode {
