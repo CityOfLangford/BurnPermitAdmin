@@ -253,7 +253,12 @@ export function printPermit(): void {
 function permitDraftFromRow(permit: PermitRow): PermitDetailsDraft {
   const applicantParts = permit.Applicant?.split(' ') || [];
   const addressParts = permit.PermitAddress?.split(' ') || [];
-  const status = permit.PermitStatus?.toLowerCase() === 'granted' ? '1' : permit.PermitStatus || '0';
+  const permitStatus = permit.PermitStatus?.trim().toLowerCase();
+  const status = permitStatus === 'granted' || permitStatus === '1'
+    ? '1'
+    : permitStatus === 'cancelled' || permitStatus === '0'
+      ? '0'
+      : '';
   const type = permit.TypeID ? String(permit.TypeID) : permit.PermitType?.toLowerCase().includes('camp') ? '2' : '1';
 
   return {
@@ -390,7 +395,7 @@ function PermitDetails({ permit, permitPeriods, onBack, onSaved }: PermitDetails
                   <label className="detail-field"><span>Permit type</span><select value={draft.permitType} onChange={(event) => updateDraft('permitType', event.target.value)} required><option value="2">Campfire</option><option value="1">Open Burn</option></select></label>
                 ) : <DetailField label="Permit type" value={permit.PermitType} editing={false} onChange={() => undefined} />}
                 {editing ? (
-                  <label className="detail-field"><span>Status</span><select value={draft.permitStatus} onChange={(event) => updateDraft('permitStatus', event.target.value)}><option value="1">Granted</option><option value="0">Cancelled</option></select></label>
+                  <label className="detail-field"><span>Status</span><select value={draft.permitStatus} onChange={(event) => updateDraft('permitStatus', event.target.value)} required><option value="" disabled>Select status</option><option value="1">Granted</option><option value="0">Cancelled</option></select></label>
                 ) : <DetailField label="Status" value={permit.PermitStatus} editing={false} onChange={() => undefined} />}
               </div>
               <div>
