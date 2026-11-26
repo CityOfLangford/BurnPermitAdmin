@@ -47,7 +47,7 @@ Start the API and app together:
 npm run dev
 ```
 
-The API is available at `http://localhost:3001`; the app is available at
+The API is available at `http://localhost:50110`; the app is available at
 `http://localhost:5173`. The app proxies `/api` requests to the API.
 
 To run one workspace independently:
@@ -82,7 +82,7 @@ pm2 start ecosystem.config.js --env production
 
 The API runs two clustered workers. The app runs as one PM2 process on port
 `50111`; it serves the production build and proxies `/api/*` to the API on port
-`3001`, so PM2 can serve the complete app without IIS. Port `5173` is only used
+`50110`, so PM2 can serve the complete app without IIS. Port `5173` is only used
 while the Vite development server is running.
 
 The API reads `packages\api\.env`; the front end's `VITE_ENTRA_*` settings are
@@ -91,7 +91,7 @@ embedded at build time from `packages\app\.env`.
 ## Production routing on IIS
 
 The app build includes an IIS `web.config` that forwards `/api` and `/api/*` to
-the API on port `3001` and other requests to the PM2 app on port `50111`.
+the API on port `50110` and other requests to the PM2 app on port `50111`.
 Configure the IIS site's physical path as `packages\app\dist` and install the
 IIS URL Rewrite and Application Request Routing (ARR) modules. Enable proxying
 in ARR so IIS can forward requests to the local PM2 processes. The API route

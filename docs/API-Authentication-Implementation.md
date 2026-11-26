@@ -214,7 +214,7 @@ import { createAuthorizationMiddleware, readAuthorizationConfig } from './auth/a
 dotenv.config();
 
 export const app = express();
-const port = Number(process.env.PORT || 3001);
+const port = Number(process.env.PORT || 50110);
 const authorizationConfig = readAuthorizationConfig();
 
 // 1. CORS first, so browser preflight (OPTIONS) requests succeed without a token.
