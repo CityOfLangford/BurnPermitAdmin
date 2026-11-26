@@ -1,9 +1,8 @@
 node_modules/
 packages/*/node_modules/
 .env
-packages/permitAdminAPI/.env
-packages/permitAdminAPI/dist/
-packages/permitAdminAPP/dist/
+packages/api/.env
+packages/api/dist/
 packages/app/dist/
 .DS_Store
 npm-debug.log*
